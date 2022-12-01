@@ -68,53 +68,57 @@
 /////////////////////////////////////////////
 // Import Our Dependencies
 /////////////////////////////////////////////
-require("dotenv").config(); // Load ENV Variables
+// require("dotenv").config(); // Load ENV Variables
 const express = require("express"); // import express
 const morgan = require("morgan"); //import morgan
 const methodOverride = require("method-override");
-const mongoose = require("mongoose");
+// const mongoose = require("mongoose");
 const path = require("path"); // built in node module we use to resolve paths more on this when we use it
+const Movie = require("./models/movie");
+const moviesController = require("./controllers/movie");
+
+
 
 /////////////////////////////////////////////
 // Establish Database Connection
 /////////////////////////////////////////////
 // Setup inputs for our connect function
-const DATABASE_URL = process.env.DATABASE_URL;
-const CONFIG = {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-};
+// const DATABASE_URL = process.env.DATABASE_URL;
+// const CONFIG = {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true,
+// };
 
 // Establish Connection
-mongoose.connect(DATABASE_URL, CONFIG);
+// mongoose.connect(DATABASE_URL, CONFIG);
 
-// Connecton Status Events for when connection opens/disconnects/errors
-mongoose.connection
-    .on("open", () => console.log("Connected to Mongoose"))
-    .on("close", () => console.log("Disconnected from Mongoose"))
-    .on("error", (error) => console.log(error));
+// // Connecton Status Events for when connection opens/disconnects/errors
+// mongoose.connection
+//     .on("open", () => console.log("Connected to Mongoose"))
+//     .on("close", () => console.log("Disconnected from Mongoose"))
+//     .on("error", (error) => console.log(error));
 
 ////////////////////////////////////////////////
 // Create Our Models
 ////////////////////////////////////////////////
 // pull schema and model from mongoose using object destructuring
-const { Schema, model } = mongoose;
+// const { Schema, model } = mongoose;
 
-// make movies schema
-const moviesSchema = new Schema({
-    title: { type: String, required: true },
-    releaseDate: String,
-    length: Number,
-    genre: String,
-    poster: { type: String, required: true },
-    director: { type: String, required: true },
-    rating: String,
-    watchAgain: Boolean,
-    cast: [{ type: String }]
-});
+// // make movies schema
+// const moviesSchema = new Schema({
+//     title: { type: String, required: true },
+//     releaseDate: String,
+//     length: Number,
+//     genre: String,
+//     poster: { type: String, required: true },
+//     director: { type: String, required: true },
+//     rating: String,
+//     watchAgain: Boolean,
+//     cast: [{ type: String }]
+// });
 
-// make movie model
-const Movie = model("Movie", moviesSchema);
+// // make movie model
+// const Movie = model("Movie", moviesSchema);
 
 /////////////////////////////////////////////////
 // Create our Express Application Object Bind Liquid Templating Engine
@@ -131,69 +135,74 @@ app.use(methodOverride("_method")); // override for put and delete requests from
 app.use(express.urlencoded({ extended: true })); // parse urlencoded request bodies
 app.use(express.static("public")); // serve files from public statically
 
+
+/////////////////////////////////////////////
+// Link to Routes
+/////////////////////////////////////////////
+app.use("/movies", moviesController);
 ////////////////////////////////////////////
 // Routes
 ////////////////////////////////////////////
 // Root Route:
-app.get("/", (req, res) => {
-    res.send("your server is running... better catch it.");
-});
+// app.get("/", (req, res) => {
+//     res.send("your server is running... better catch it.");
+// });
 
-// Seed Route:
-app.get("/movies/seed", (req, res) => {
-    // array of starter movies
-    const startMovies = [
-        {
-            title: "The Addams Family", releaseDate: "1991", length: 99, genre: "Comedy/Fantasy", poster: "https://m.media-amazon.com/images/I/51vN421z-GL._AC_UF894,1000_QL80_.jpg", director: "Barry Sonnenfeld", rating: "⭐⭐⭐⭐ 6.9/10", watchAgain: true, cast: ["Anjelica Huston as Morticia Addams", "Raul Julia as Gomez Addams",
-                "Christopher Lloyd as Uncle Fester Addams / Gordon Craven",
-                "Christina Ricci as Wednesday Addams",
-                "Jimmy Workman as Pugsley Addams",
-                "Judith Malina as Grandmama",
-                "Carel Struycken as Lurch",
-                "Christopher Hart as Thing",
-                "John Franklin as Cousin Itt",
-                "Elizabeth Wilson as Abigail Craven",
-                "Dan Hedaya as Tully Alford",
-                "Dana Ivey as Margaret Alford",
-                "Paul Benedict as Judge George Womack",
-                "Mercedes McNab as Girl Scout",
-                "Sally Jessy Raphael as Herself"]
-        },
-        {
-            title: "Beetlejuice", releaseDate: "1988", length: 92, genre: "Fantasy/Horror/Comedy", poster: "https://i.ebayimg.com/images/g/eawAAOSwNx1gnRdr/s-l500.jpg", director: "Tim Burton", rating: "⭐⭐⭐⭐ 7.5/10", watchAgain: true, cast: ["Alec Baldwin as Adam Maitland",
-                "Geena Davis as Barbara Maitland, the wife of Adam",
-                "Annie McEnroe as Jane Butterfield",
-                "Michael Keaton as Betelgeuse",
-                "Jeffrey Jones as Charles Deetz",
-                "Catherine O'Hara as Delia Deetz",
-                "Winona Ryder as Lydia Deetz"]
-        },
-        {
-            title: "Edward Scissorhands", releaseDate: "1990", length: 105, genre: "Drama/Fantasy/Romance", poster: "https://m.media-amazon.com/images/I/41P8d1HmS-L._AC_.jpg", director: "Tim Burton", rating: "⭐⭐⭐⭐ 7.9/10", watchAgain: true, cast: ["Johnny Depp as Edward Scissorhands",
-                "Winona Ryder as Kim Boggs",
-                "Anthony Michael Hall as Jim",
-                "Dianne Wiest as Peg Boggs",
-                "Kathy Baker as Joyce Monroe",
-                "Alan Arkin as Bill Boggs",
-                "Vincent Price as The Inventor",
-                "Robert Oliveri as Kevin Boggs",
-                "Conchata Ferrell as Helen",
-                "Caroline Aaron as Marge",
-                "Dick Anthony Williams as Officer Allen",
-                "O-Lan Jones as Esmeralda"]
-        },
+// // Seed Route:
+// app.get("/movies/seed", (req, res) => {
+//     // array of starter movies
+//     const startMovies = [
+//         {
+//             title: "The Addams Family", releaseDate: "1991", length: 99, genre: "Comedy/Fantasy", poster: "https://m.media-amazon.com/images/I/51vN421z-GL._AC_UF894,1000_QL80_.jpg", director: "Barry Sonnenfeld", rating: "⭐⭐⭐⭐ 6.9/10", watchAgain: true, cast: ["Anjelica Huston as Morticia Addams", "Raul Julia as Gomez Addams",
+//                 "Christopher Lloyd as Uncle Fester Addams / Gordon Craven",
+//                 "Christina Ricci as Wednesday Addams",
+//                 "Jimmy Workman as Pugsley Addams",
+//                 "Judith Malina as Grandmama",
+//                 "Carel Struycken as Lurch",
+//                 "Christopher Hart as Thing",
+//                 "John Franklin as Cousin Itt",
+//                 "Elizabeth Wilson as Abigail Craven",
+//                 "Dan Hedaya as Tully Alford",
+//                 "Dana Ivey as Margaret Alford",
+//                 "Paul Benedict as Judge George Womack",
+//                 "Mercedes McNab as Girl Scout",
+//                 "Sally Jessy Raphael as Herself"]
+//         },
+//         {
+//             title: "Beetlejuice", releaseDate: "1988", length: 92, genre: "Fantasy/Horror/Comedy", poster: "https://i.ebayimg.com/images/g/eawAAOSwNx1gnRdr/s-l500.jpg", director: "Tim Burton", rating: "⭐⭐⭐⭐ 7.5/10", watchAgain: true, cast: ["Alec Baldwin as Adam Maitland",
+//                 "Geena Davis as Barbara Maitland, the wife of Adam",
+//                 "Annie McEnroe as Jane Butterfield",
+//                 "Michael Keaton as Betelgeuse",
+//                 "Jeffrey Jones as Charles Deetz",
+//                 "Catherine O'Hara as Delia Deetz",
+//                 "Winona Ryder as Lydia Deetz"]
+//         },
+//         {
+//             title: "Edward Scissorhands", releaseDate: "1990", length: 105, genre: "Drama/Fantasy/Romance", poster: "https://m.media-amazon.com/images/I/41P8d1HmS-L._AC_.jpg", director: "Tim Burton", rating: "⭐⭐⭐⭐ 7.9/10", watchAgain: true, cast: ["Johnny Depp as Edward Scissorhands",
+//                 "Winona Ryder as Kim Boggs",
+//                 "Anthony Michael Hall as Jim",
+//                 "Dianne Wiest as Peg Boggs",
+//                 "Kathy Baker as Joyce Monroe",
+//                 "Alan Arkin as Bill Boggs",
+//                 "Vincent Price as The Inventor",
+//                 "Robert Oliveri as Kevin Boggs",
+//                 "Conchata Ferrell as Helen",
+//                 "Caroline Aaron as Marge",
+//                 "Dick Anthony Williams as Officer Allen",
+//                 "O-Lan Jones as Esmeralda"]
+//         },
 
-    ];
+//     ];
 
-    // Delete all moviies
-    Movie.deleteMany({}).then((data) => {
-        // Movie Starter Movies
-        Movie.create(startMovies).then((data) => {
-            // send created fruits as response to confirm creation
-            res.json(data);
-        });
-    });
-});
+//     // Delete all moviies
+//     Movie.deleteMany({}).then((data) => {
+//         // Movie Starter Movies
+//         Movie.create(startMovies).then((data) => {
+//             // send created fruits as response to confirm creation
+//             res.json(data);
+//         });
+//     });
+// });
 
 // ==================================== INDEX: ====================================
 // Index Route (Get => /movies)
@@ -232,94 +241,95 @@ app.get("/movies/seed", (req, res) => {
 //     res.render("movies/Index", { movies });
 // });
 
-app.get("/movies", async (req, res) => {
-    try {
-        const movies = await Movie.find({});
-        res.render("movies/Index", { movies });
-    } catch (err) {
-        res.json({ err });
-    }
-});
+// app.get("/movies", async (req, res) => {
+//     try {
+//         const movies = await Movie.find({});
+//         res.render("movies/Index", { movies });
+//     } catch (err) {
+//         res.json({ err });
+//     }
+// });
 
 // NEW
-app.get("/movies/new", (req, res) => {
-    res.render("movies/New")
-})
+// app.get("/movies/new", (req, res) => {
+//     res.render("movies/New")
+// })
 
 // DELETE
-app.delete("/movies/:id", (req, res) => {
-    // get the id from params
-    const id = req.params.id;
-    // delete the fruit
-    Movie.findByIdAndRemove(id)
-        .then((movie) => {
-            // redirect to main page after deleting
-            res.redirect("/movies");
-        })
-        // send error as json
-        .catch((error) => {
-            console.log(error);
-            res.json({ error });
-        });
-});
+// app.delete("/movies/:id", (req, res) => {
+//     // get the id from params
+//     const id = req.params.id;
+//     // delete the fruit
+//     Movie.findByIdAndRemove(id)
+//         .then((movie) => {
+//             // redirect to main page after deleting
+//             res.redirect("/movies");
+//         })
+//         // send error as json
+//         .catch((error) => {
+//             console.log(error);
+//             res.json({ error });
+//         });
+// });
 
-// UPDATE
-app.put("/movies/:id", async (req, res) => {
-    try {
-        const id = req.params.id;
-        req.body.watchAgain = req.body.watchAgain === "on" ? true : false;
-        req.body.cast = req.body.cast.split(",")
-        await Movie.findByIdAndUpdate(id, req.body)
-        res.redirect(`/movies/${id}`)
-    } catch (error) {
-        console.log(error);
-        res.json({ error });
-    }
-})
+// // UPDATE
+// app.put("/movies/:id", async (req, res) => {
+//     try {
+//         const id = req.params.id;
+//         req.body.watchAgain = req.body.watchAgain === "on" ? true : false;
+//         req.body.cast = req.body.cast.split(",")
+//         await Movie.findByIdAndUpdate(id, req.body)
+//         res.redirect(`/movies/${id}`)
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ error });
+//     }
+// })
+
 // CREATE/ POST
-app.post("/movies", async (req, res) => {
-    try {
-        req.body.watchAgain = req.body.watchAgain === "on" ? true : false;
-        req.body.cast = req.body.cast.split(",")
-        console.log(req.body)
-        const createdMovie = await Movie.create(req.body)
-        res.redirect("/movies")
-    } catch (error) {
-        console.log(error);
-        res.json({ error });
-    }
-})
+// app.post("/movies", async (req, res) => {
+//     try {
+//         req.body.watchAgain = req.body.watchAgain === "on" ? true : false;
+//         req.body.cast = req.body.cast.split(",")
+//         console.log(req.body)
+//         const createdMovie = await Movie.create(req.body)
+//         res.redirect("/movies")
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ error });
+//     }
+// })
 
 
 //Edit 
-app.get("/movies/:id/edit", (req, res) => {
-    // get the id from params
-    const id = req.params.id;
-    // get the fruit from the database
-    Movie.findById(id)
-        .then((movie) => {
-            // render Edit page and send fruit data
-            res.render("movies/Edit.jsx", { movie });
-        })
-        // send error as json
-        .catch((error) => {
-            console.log(error);
-            res.json({ error });
-        });
-});
+// app.get("/movies/:id/edit", (req, res) => {
+//     // get the id from params
+//     const id = req.params.id;
+//     // get the fruit from the database
+//     Movie.findById(id)
+//         .then((movie) => {
+//             // render Edit page and send fruit data
+//             res.render("movies/Edit.jsx", { movie });
+//         })
+//         // send error as json
+//         .catch((error) => {
+//             console.log(error);
+//             res.json({ error });
+//         });
+// });
 
 // SHOW
-app.get("/movies/:id", async (req, res) => {
-    const id = req.params.id
+// app.get("/movies/:id", async (req, res) => {
+//     const id = req.params.id
 
-    try {
-        const movie = await Movie.findById(id)
-        res.render("movies/Show", { movie })
-    } catch (error) {
-        console.log(error);
-        res.json({ error });
-    }
-})
+//     try {
+//         const movie = await Movie.findById(id)
+//         res.render("movies/Show", { movie })
+//     } catch (error) {
+//         console.log(error);
+//         res.json({ error });
+//     }
+// })
 
 //////////////////////////////////////////////
 // Server Listener
